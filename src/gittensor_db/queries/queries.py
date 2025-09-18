@@ -144,10 +144,10 @@ LIMIT 1
 
 SET_MINER_EVALUATION = """
 INSERT INTO miner_evaluations (
-    uid, github_id, github_pat_hash, failed_reason, total_score,
+    uid, github_id, failed_reason, total_score,
     total_lines_changed, total_open_prs, total_prs, unique_repos_count,
     evaluation_timestamp
-) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
 """
 
 GET_EVALUATIONS_BY_TIMEFRAME = """

@@ -62,17 +62,10 @@ class MinerEvaluationsRepository(BaseRepository):
         Returns:
             True if successful, False otherwise
         """
-        # Hash the PAT for security if present
-        pat_hash = None
-        if evaluation.github_pat:
-            import hashlib
-            pat_hash = hashlib.sha256(evaluation.github_pat.encode()).hexdigest()
-
         query = SET_MINER_EVALUATION
         params = (
             evaluation.uid,
             evaluation.github_id,
-            pat_hash,
             evaluation.failed_reason,
             evaluation.total_score,
             evaluation.total_lines_changed,
