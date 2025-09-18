@@ -18,11 +18,11 @@ CREATE TABLE IF NOT EXISTS pr_diffs (
     FOREIGN KEY (miner_evaluation_id) REFERENCES miner_evaluations(id) ON DELETE CASCADE,
 
     -- Unique constraint to prevent duplicate pr_diffs for same evaluation and PR
-    UNIQUE (miner_evaluation_id, pr_number, repository_full_name)
+    CONSTRAINT unique_pr_diff UNIQUE (miner_evaluation_id, pr_number, repository_full_name)
 );
 
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_pr_diffs_miner_evaluation_id ON pr_diffs(miner_evaluation_id);
-CREATE INDEX IF NOT EXISTS idx_pr_diffs_repostiory_name ON pr_diffs(repository_full_name);
-CREATE INDEX IF NOT EXISTS idx_pr_diffs_earned_score ON pr_diffs(earned_score);
-CREATE INDEX IF NOT EXISTS idx_pr_diffs_total_changes ON pr_diffs(total_changes);
+CREATE INDEX idx_pr_diffs_miner_evaluation_id ON pr_diffs(miner_evaluation_id);
+CREATE INDEX idx_pr_diffs_repostiory_name ON pr_diffs(repository_full_name);
+CREATE INDEX idx_pr_diffs_earned_score ON pr_diffs(earned_score);
+CREATE INDEX idx_pr_diffs_total_changes ON pr_diffs(total_changes);

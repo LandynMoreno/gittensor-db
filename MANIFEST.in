@@ -1,0 +1,4 @@
+# MANIFEST.in 
+# Included to safety the event that SQL files aren't being included properly
+include README.md
+recursive-include src/gittensor_db/migrations/sql *.sql

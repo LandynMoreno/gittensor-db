@@ -21,4 +21,4 @@ CREATE TABLE IF NOT EXISTS file_changes (
 );
 
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_file_changes_pr_diff_id ON file_changes(pr_diff_id);
+CREATE INDEX idx_file_changes_pr_diff_id ON file_changes(pr_diff_id);

@@ -5,8 +5,7 @@ This class implements a clean abstraction layer for database operations, elimina
 redundant cursor management and error handling code across repository classes.
 """
 
-import mysql.connector
-from typing import Optional, List, Dict, Any, TypeVar, Generic, Callable
+from typing import Optional, List, Dict, Any, TypeVar, Callable
 from contextlib import contextmanager
 import logging
 
