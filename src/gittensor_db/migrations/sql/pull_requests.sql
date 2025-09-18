@@ -25,8 +25,8 @@ CREATE TABLE IF NOT EXISTS pull_requests (
 );
 
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_pull_requests_number ON pull_requests(number);
-CREATE INDEX IF NOT EXISTS idx_pull_requests_repository ON pull_requests(repository_full_name);
-CREATE INDEX IF NOT EXISTS idx_pull_requests_author ON pull_requests(author_login);
-CREATE INDEX IF NOT EXISTS idx_pull_requests_merged_at ON pull_requests(merged_at);
-CREATE INDEX IF NOT EXISTS idx_pull_requests_merged_by ON pull_requests(merged_by_login);
+CREATE INDEX idx_pull_requests_number ON pull_requests(number);
+CREATE INDEX idx_pull_requests_repository ON pull_requests(repository_full_name);
+CREATE INDEX idx_pull_requests_author ON pull_requests(author_login);
+CREATE INDEX idx_pull_requests_merged_at ON pull_requests(merged_at);
+CREATE INDEX idx_pull_requests_merged_by ON pull_requests(merged_by_login);

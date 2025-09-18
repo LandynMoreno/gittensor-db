@@ -1,3 +1,6 @@
+# File: src/gittensor_db/connection/database.py
+# REPLACE THE ENTIRE FILE WITH THIS:
+
 """
 Database connection utility for validator storage operations.
 """
@@ -6,41 +9,40 @@ from typing import Optional
 import bittensor as bt
 
 try:
-    import mysql.connector
-    MYSQL_AVAILABLE = True
+    import psycopg2
+    from psycopg2.extras import RealDictCursor
+    POSTGRES_AVAILABLE = True
 except ImportError:
-    MYSQL_AVAILABLE = False
-    bt.logging.warning("mysql-connector-python not installed. Database storage features will be disabled.")
+    POSTGRES_AVAILABLE = False
+    bt.logging.warning("psycopg2 not installed. Database storage features will be disabled.")
 
 
 def create_database_connection() -> Optional[object]:
     """
-    Create a database connection using environment variables.
+    Create a PostgreSQL database connection using environment variables.
 
     Returns:
         Database connection if successful, None otherwise
     """
-    if not MYSQL_AVAILABLE:
-        bt.logging.error("Cannot create database connection: mysql-connector-python not installed")
+    if not POSTGRES_AVAILABLE:
+        bt.logging.error("Cannot create database connection: psycopg2 not installed")
         return None
 
     try:
         db_config = {
             'host': os.getenv('DB_HOST', 'localhost'),
-            'port': int(os.getenv('DB_PORT', 3306)),
-            'user': os.getenv('DB_USER', 'root'),
+            'port': int(os.getenv('DB_PORT', 5432)),
+            'user': os.getenv('DB_USER', 'postgres'),
             'password': os.getenv('DB_PASSWORD', ''),
             'database': os.getenv('DB_NAME', 'gittensor_validator'),
-            'autocommit': False,
-            'charset': 'utf8mb4',
-            'collation': 'utf8mb4_unicode_ci'
         }
 
-        connection = mysql.connector.connect(**db_config)
-        bt.logging.info("Successfully connected to database for validation result storage")
+        connection = psycopg2.connect(**db_config)
+        connection.autocommit = False
+        bt.logging.info("Successfully connected to PostgreSQL database for validation result storage")
         return connection
 
-    except mysql.connector.Error as e:
+    except psycopg2.Error as e:
         bt.logging.error(f"Failed to connect to database: {e}")
         return None
     except Exception as e:

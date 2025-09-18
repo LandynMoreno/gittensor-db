@@ -18,9 +18,9 @@ CREATE TABLE IF NOT EXISTS miner_evaluations (
     updated_at           TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
 
     -- Unique constraint to prevent duplicate evaluations
-    UNIQUE (uid, evaluation_timestamp)
+    CONSTRAINT unique_evaluation UNIQUE (uid, evaluation_timestamp)
 );
 
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_miner_evaluations_uid ON miner_evaluations(uid);
-CREATE INDEX IF NOT EXISTS idx_miner_evaluations_evaluation_timestamp ON miner_evaluations(evaluation_timestamp);
+CREATE INDEX idx_miner_evaluations_uid ON miner_evaluations(uid);
+CREATE INDEX dx_miner_evaluations_evaluation_timestamp ON miner_evaluations(evaluation_timestamp);

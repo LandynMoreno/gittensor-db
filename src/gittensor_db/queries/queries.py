@@ -59,7 +59,7 @@ GET_PULL_REQUEST_WITH_DIFFS = """
 SELECT pr.number, pr.title, pr.repository_full_name, pr.merged_at,
        pr.created_at_pr, pr.additions, pr.deletions, pr.commits, pr.author_login,
        pr.merged_by_login, r.name, r.owner,
-       pd.evaluation_id, pd.earned_score,
+       pd.miner_evaluation_id, pd.earned_score,
        fc.filename, fc.changes, fc.additions as file_additions,
        fc.deletions as file_deletions, fc.status, fc.patch, fc.file_extension
 FROM pull_requests pr
@@ -71,27 +71,28 @@ WHERE pr.number = %s AND pr.repository_full_name = %s
 
 # PR Diff Queries
 GET_PR_DIFF_METADATA = """
-SELECT id, pr_number, repository_full_name, evaluation_id, earned_score, created_at
+SELECT id, pr_number, repository_full_name, miner_evaluation_id, earned_score, created_at
 FROM pr_diffs
-WHERE pr_number = %s AND repository_full_name = %s AND evaluation_id = %s
+WHERE pr_number = %s AND repository_full_name = %s AND miner_evaluation_id = %s
 """
 
 SET_PR_DIFF = """
 INSERT INTO pr_diffs (
-    pr_number, repository_full_name, evaluation_id, earned_score
+    pr_number, repository_full_name, miner_evaluation_id, earned_score
 ) VALUES (%s, %s, %s, %s)
-ON DUPLICATE KEY UPDATE
-    earned_score = VALUES(earned_score),
+ON CONFLICT (miner_evaluation_id, pr_number, repository_full_name) 
+DO UPDATE SET
+    earned_score = EXCLUDED.earned_score,
     updated_at = CURRENT_TIMESTAMP
 """
 
 GET_PR_DIFFS_BY_EVALUATION = """
-SELECT pd.id, pd.pr_number, pd.repository_full_name, pd.evaluation_id, pd.earned_score, pd.created_at,
+SELECT pd.id, pd.pr_number, pd.repository_full_name, pd.miner_evaluation_id, pd.earned_score, pd.created_at,
        pr.title, pr.merged_at, pr.created_at_pr, pr.additions, pr.deletions,
        pr.author_login, pr.merged_by_login
 FROM pr_diffs pd
 JOIN pull_requests pr ON pd.pr_number = pr.number AND pd.repository_full_name = pr.repository_full_name
-WHERE pd.evaluation_id = %s
+WHERE pd.miner_evaluation_id = %s
 ORDER BY pd.earned_score DESC, pr.merged_at DESC
 """
 

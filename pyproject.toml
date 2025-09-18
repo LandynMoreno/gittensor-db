@@ -24,8 +24,8 @@ classifiers = [
 ]
 
 dependencies = [
-    "mysql-connector-python>=8.0.0",
-    "bittensor>=6.0.0",  # or whatever version you need
+    "psycopg2-binary>=2.9.0",
+    "bittensor>=9.0.0",
 ]
 
 [project.optional-dependencies]
