@@ -1,6 +1,3 @@
-# File: src/gittensor_db/connection/database.py
-# REPLACE THE ENTIRE FILE WITH THIS:
-
 """
 Database connection utility for validator storage operations.
 """
