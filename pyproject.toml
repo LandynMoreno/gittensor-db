@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gittensor-db"
+version = "0.1.0"
+description = "Database layer for GitTensor validator and API services"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    {name = "GitTensor Team", email = "team@gittensor.com"},
+]
+keywords = ["database", "mysql", "repository", "gittensor"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+    "mysql-connector-python>=8.0.0",
+    "bittensor>=6.0.0",  # or whatever version you need
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=22.0.0",
+    "isort>=5.0.0",
+    "mypy>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://https://gittensor.io/"
+Repository = "https://github.com/LandynMoreno/gittensor-db"
+Issues = "https://github.com/LandynMoreno/gittensor-db/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+gittensor_db = ["migrations/sql/*.sql"]

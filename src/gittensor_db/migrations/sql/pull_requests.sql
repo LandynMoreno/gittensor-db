@@ -1,0 +1,32 @@
+-- Pull request information table
+-- Stores PR metadata from classes.py PullRequest dataclass
+
+CREATE TABLE IF NOT EXISTS pull_requests (
+    number               INTEGER          NOT NULL,
+    repository_full_name VARCHAR(255)     NOT NULL,
+    title                TEXT             NOT NULL,
+    merged_at            TIMESTAMP        NOT NULL,
+    created_at_pr        TIMESTAMP        NOT NULL,
+    additions            INTEGER          DEFAULT 0,
+    deletions            INTEGER          DEFAULT 0,
+    commits              INTEGER          DEFAULT 0,
+    author_login         VARCHAR(255)     NOT NULL,
+    merged_by_login      VARCHAR(255),
+
+    -- Metadata with automatic timestamps
+    created_at           TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+    updated_at           TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+
+    -- Primary key constraint
+    PRIMARY KEY (number, repository_full_name),
+
+    -- Foreign key constraint
+    FOREIGN KEY (repository_full_name) REFERENCES repositories(full_name) ON DELETE CASCADE
+);
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_pull_requests_number ON pull_requests(number);
+CREATE INDEX IF NOT EXISTS idx_pull_requests_repository ON pull_requests(repository_full_name);
+CREATE INDEX IF NOT EXISTS idx_pull_requests_author ON pull_requests(author_login);
+CREATE INDEX IF NOT EXISTS idx_pull_requests_merged_at ON pull_requests(merged_at);
+CREATE INDEX IF NOT EXISTS idx_pull_requests_merged_by ON pull_requests(merged_by_login);
