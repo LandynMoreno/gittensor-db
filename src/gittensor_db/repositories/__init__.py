@@ -8,6 +8,7 @@ from .pull_requests_repository import PullRequestsRepository
 from .pr_diffs_repository import PRDiffsRepository
 from .file_changes_repository import FileChangesRepository
 from .miner_evaluations_repository import MinerEvaluationsRepository
+from .issues_repository import IssuesRepository
 
 __all__ = [
     'BaseRepository',
@@ -15,5 +16,6 @@ __all__ = [
     'PullRequestsRepository',
     'PRDiffsRepository',
     'FileChangesRepository',
-    'MinerEvaluationsRepository'
+    'MinerEvaluationsRepository',
+    'IssuesRepository'
 ]

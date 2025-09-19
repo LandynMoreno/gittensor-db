@@ -159,3 +159,29 @@ FROM miner_evaluations
 WHERE evaluation_timestamp BETWEEN %s AND %s
 ORDER BY evaluation_timestamp DESC, total_score DESC
 """
+
+# Issue Queries
+GET_ISSUE = """
+SELECT number, pr_number, repository_full_name, title, created_at, closed_at
+FROM issues
+WHERE number = %s AND repository_full_name = %s
+"""
+
+GET_ISSUES_BY_REPOSITORY = """
+SELECT number, pr_number, repository_full_name, title, created_at, closed_at
+FROM issues
+WHERE repository_full_name = %s
+ORDER BY created_at DESC
+"""
+
+SET_ISSUE = """
+INSERT INTO issues (
+    number, pr_number, repository_full_name, title, created_at, closed_at
+) VALUES (%s, %s, %s, %s, %s, %s)
+ON DUPLICATE KEY UPDATE
+    pr_number = VALUES(pr_number),
+    repository_full_name = VALUES(repository_full_name),
+    title = VALUES(title),
+    created_at = VALUES(created_at),
+    closed_at = VALUES(closed_at)
+"""
