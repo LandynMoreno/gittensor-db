@@ -73,6 +73,15 @@ class PRDiff:
             files=files
         )
 
+@dataclass
+class Issue:
+    number: int
+    pr_number: int
+    repository_full_name: str
+    title: str
+    created_at: datetime
+    closed_at: datetime
+
 
 @dataclass
 class PullRequest:
@@ -87,6 +96,7 @@ class PullRequest:
     author_login: str
     merged_by_login: Optional[str] = None
     commits: int = 0
+    issues: Optional[List[Issue]] = None
     
     @property
     def repository_full_name(self) -> str:
@@ -106,7 +116,20 @@ class PullRequest:
             name=repo_data['name'],
             owner=repo_data['owner']['login']
         )
-        
+
+        raw_issues = pr_data['closingIssuesReferences']['nodes']
+        issues = []
+        for issue in raw_issues:
+            if issue['closedAt']:
+                issues.append(Issue(
+                    number=issue['number'],
+                    pr_number=pr_data['number'],
+                    repository_full_name=repository.full_name,
+                    title=issue['title'],
+                    created_at=datetime.fromisoformat(issue['createdAt'].rstrip("Z")).replace(tzinfo=datetime.now().astimezone().tzinfo),
+                    closed_at=datetime.fromisoformat(issue['closedAt'].rstrip("Z")).replace(tzinfo=datetime.now().astimezone().tzinfo),
+                ))
+
         return cls(
             number=pr_data['number'],
             title=pr_data['title'],
@@ -117,7 +140,8 @@ class PullRequest:
             deletions=pr_data['deletions'],
             author_login=pr_data['author']['login'],
             merged_by_login=pr_data['mergedBy']['login'] if pr_data.get('mergedBy') else None,
-            commits=pr_data.get('commits', {}).get('totalCount', 0)
+            commits=pr_data.get('commits', {}).get('totalCount', 0),
+            issues=issues
         )
 
 
