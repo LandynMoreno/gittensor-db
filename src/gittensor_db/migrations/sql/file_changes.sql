@@ -17,8 +17,10 @@ CREATE TABLE IF NOT EXISTS file_changes (
     updated_at       TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
 
     -- Foreign key constraint
-    FOREIGN KEY (pr_diff_id) REFERENCES pr_diffs(id) ON DELETE CASCADE
+    FOREIGN KEY (pr_diff_id)
+        REFERENCES pr_diffs(id)
+            ON DELETE CASCADE
 );
 
 -- Indexes for performance
-CREATE INDEX idx_file_changes_pr_diff_id ON file_changes(pr_diff_id);
+CREATE INDEX idx_file_changes_pr_diff_id    IF NOT EXISTS ON    file_changes (pr_diff_id);

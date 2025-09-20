@@ -6,6 +6,8 @@ from dataclasses import dataclass, field
 from typing import Optional, List, Set, Callable
 from datetime import datetime
 
+GITHUB_DOMAIN = 'https://github.com/'
+
 @dataclass
 class Repository:
     """Repository information"""
@@ -15,6 +17,9 @@ class Repository:
     @property
     def full_name(self) -> str:
         return f"{self.owner}/{self.name}"
+    
+    def construct_github_url(self) -> str:
+        return GITHUB_DOMAIN + self.full_name
 
 @dataclass
 class FileChange:
@@ -52,6 +57,9 @@ class PRDiff:
         """Set of all file extensions in this diff"""
         return {file.file_extension for file in self.files if file.file_extension}
     
+    def construct_github_url(self) -> str:
+        return GITHUB_DOMAIN + f"{self.repository_full_name}/pull/{self.pr_number}/files"
+    
     @classmethod
     def from_github_response(cls, pr_number: int, repo_full_name: str, files_data: List[dict]) -> 'PRDiff':
         """Create PRDiff from GitHub API files response"""
@@ -75,12 +83,16 @@ class PRDiff:
 
 @dataclass
 class Issue:
+    """Represents an issue that belongs to a pull request"""
     number: int
     pr_number: int
     repository_full_name: str
     title: str
     created_at: datetime
     closed_at: datetime
+
+    def construct_github_url(self) -> str:
+        return GITHUB_DOMAIN + f"{self.repository_full_name}/issues/{self.number}"
 
 
 @dataclass
@@ -107,6 +119,9 @@ class PullRequest:
     def total_changes(self) -> int:
         """Total lines changed (additions + deletions)"""
         return self.additions + self.deletions
+    
+    def construct_github_url(self) -> str:
+        return GITHUB_DOMAIN + f"{self.repository_full_name}/pull/{self.number}"
     
     @classmethod
     def from_graphql_response(cls, pr_data: dict) -> 'PullRequest':

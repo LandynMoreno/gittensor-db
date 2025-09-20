@@ -22,7 +22,7 @@ ORDER BY full_name
 # Pull Request Queries
 GET_PULL_REQUEST = """
 SELECT pr.number, pr.title, pr.repository_full_name, pr.merged_at,
-       pr.created_at_pr, pr.additions, pr.deletions, pr.commits, pr.author_login,
+       pr.pr_created_at, pr.additions, pr.deletions, pr.commits, pr.author_login,
        pr.merged_by_login, r.name, r.owner
 FROM pull_requests pr
 JOIN repositories r ON pr.repository_full_name = r.full_name
@@ -31,13 +31,13 @@ WHERE pr.number = %s AND pr.repository_full_name = %s
 
 SET_PULL_REQUEST = """
 INSERT INTO pull_requests (
-    number, repository_full_name, title, merged_at, created_at_pr,
+    number, repository_full_name, title, merged_at, pr_created_at,
     additions, deletions, commits, author_login, merged_by_login
 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 ON DUPLICATE KEY UPDATE
     title = VALUES(title),
     merged_at = VALUES(merged_at),
-    created_at_pr = VALUES(created_at_pr),
+    pr_created_at = VALUES(pr_created_at),
     additions = VALUES(additions),
     deletions = VALUES(deletions),
     commits = VALUES(commits),
@@ -47,7 +47,7 @@ ON DUPLICATE KEY UPDATE
 
 GET_PULL_REQUESTS_BY_REPOSITORY = """
 SELECT pr.number, pr.title, pr.repository_full_name, pr.merged_at,
-       pr.created_at_pr, pr.additions, pr.deletions, pr.commits, pr.author_login,
+       pr.pr_created_at, pr.additions, pr.deletions, pr.commits, pr.author_login,
        pr.merged_by_login, r.name, r.owner
 FROM pull_requests pr
 JOIN repositories r ON pr.repository_full_name = r.full_name
@@ -57,7 +57,7 @@ ORDER BY pr.merged_at DESC
 
 GET_PULL_REQUEST_WITH_DIFFS = """
 SELECT pr.number, pr.title, pr.repository_full_name, pr.merged_at,
-       pr.created_at_pr, pr.additions, pr.deletions, pr.commits, pr.author_login,
+       pr.pr_created_at, pr.additions, pr.deletions, pr.commits, pr.author_login,
        pr.merged_by_login, r.name, r.owner,
        pd.miner_evaluation_id, pd.earned_score,
        fc.filename, fc.changes, fc.additions as file_additions,
@@ -88,7 +88,7 @@ DO UPDATE SET
 
 GET_PR_DIFFS_BY_EVALUATION = """
 SELECT pd.id, pd.pr_number, pd.repository_full_name, pd.miner_evaluation_id, pd.earned_score, pd.created_at,
-       pr.title, pr.merged_at, pr.created_at_pr, pr.additions, pr.deletions,
+       pr.title, pr.merged_at, pr.pr_created_at, pr.additions, pr.deletions,
        pr.author_login, pr.merged_by_login
 FROM pr_diffs pd
 JOIN pull_requests pr ON pd.pr_number = pr.number AND pd.repository_full_name = pr.repository_full_name

@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS repositories (
 );
 
 -- Indexes for performance
-CREATE INDEX idx_repositories_name ON repositories(name);
+CREATE INDEX idx_repositories_name    IF NOT EXISTS ON    repositories(name);

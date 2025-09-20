@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS pull_requests (
     repository_full_name VARCHAR(255)     NOT NULL,
     title                TEXT             NOT NULL,
     merged_at            TIMESTAMP        NOT NULL,
-    created_at_pr        TIMESTAMP        NOT NULL,
+    pr_created_at        TIMESTAMP        NOT NULL,
     additions            INTEGER          DEFAULT 0,
     deletions            INTEGER          DEFAULT 0,
     commits              INTEGER          DEFAULT 0,
@@ -17,16 +17,14 @@ CREATE TABLE IF NOT EXISTS pull_requests (
     created_at           TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
     updated_at           TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
 
-    -- Primary key constraint
-    PRIMARY KEY (number, repository_full_name),
+    PRIMARY KEY (number, repository_full_name)
 
-    -- Foreign key constraint
-    FOREIGN KEY (repository_full_name) REFERENCES repositories(full_name) ON DELETE CASCADE
+    FOREIGN KEY (repository_full_name)
+        REFERENCES repositories(full_name)
+            ON DELETE CASCADE
 );
 
 -- Indexes for performance
-CREATE INDEX idx_pull_requests_number ON pull_requests(number);
-CREATE INDEX idx_pull_requests_repository ON pull_requests(repository_full_name);
-CREATE INDEX idx_pull_requests_author ON pull_requests(author_login);
-CREATE INDEX idx_pull_requests_merged_at ON pull_requests(merged_at);
-CREATE INDEX idx_pull_requests_merged_by ON pull_requests(merged_by_login);
+CREATE INDEX idx_pull_requests_author        IF NOT EXISTS ON    pull_requests(author_login);
+CREATE INDEX idx_pull_requests_merged_at     IF NOT EXISTS ON    pull_requests(merged_at);
+CREATE INDEX idx_pull_requests_merged_by     IF NOT EXISTS ON    pull_requests(merged_by_login);
