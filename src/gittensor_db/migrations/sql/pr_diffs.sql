@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS pr_diffs (
 
     -- Metadata with automatic timestamps
     created_at           TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
-    updated_at           TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago')
+    updated_at           TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
 
     -- Foreign key constraints
     FOREIGN KEY (pr_number, repository_full_name)
@@ -32,8 +32,8 @@ CREATE TABLE IF NOT EXISTS pr_diffs (
 );
 
 -- Indexes for performance
-CREATE INDEX idx_pr_diffs_miner_evaluation_id    IF NOT EXISTS ON    pr_diffs (miner_evaluation_id);
-CREATE INDEX idx_pr_diffs_pr_number              IF NOT EXISTS ON    pr_diffs (pr_number);
-CREATE INDEX idx_pr_diffs_repository_name        IF NOT EXISTS ON    pr_diffs (repository_full_name);
-CREATE INDEX idx_pr_diffs_earned_score           IF NOT EXISTS ON    pr_diffs (earned_score);
-CREATE INDEX idx_pr_diffs_total_changes          IF NOT EXISTS ON    pr_diffs (total_changes);
+CREATE INDEX IF NOT EXISTS idx_pr_diffs_miner_evaluation_id    ON pr_diffs (miner_evaluation_id);
+CREATE INDEX IF NOT EXISTS idx_pr_diffs_pr_number              ON pr_diffs (pr_number);
+CREATE INDEX IF NOT EXISTS idx_pr_diffs_repository_name        ON pr_diffs (repository_full_name);
+CREATE INDEX IF NOT EXISTS idx_pr_diffs_earned_score           ON pr_diffs (earned_score);
+CREATE INDEX IF NOT EXISTS idx_pr_diffs_total_changes          ON pr_diffs (total_changes);

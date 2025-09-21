@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS repositories (
 
     -- Metadata with automatic timestamps
     created_at       TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
-    updated_at       TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago')
+    updated_at       TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
 );
 
 -- Indexes for performance
-CREATE INDEX idx_repositories_name    IF NOT EXISTS ON    repositories (name);
+CREATE INDEX IF NOT EXISTS idx_repositories_name    ON repositories (name);

@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS issues (
 );
 
 -- Indexes for performance
-CREATE INDEX idx_issues_pr_number     IF NOT EXISTS ON    issues (pr_number);
-CREATE INDEX idx_issues_repository    IF NOT EXISTS ON    issues (repository_full_name);
-CREATE INDEX idx_issues_created_at    IF NOT EXISTS ON    issues (created_at);
-CREATE INDEX idx_issues_closed_at     IF NOT EXISTS ON    issues (closed_at);
+CREATE INDEX IF NOT EXISTS idx_issues_pr_number     ON issues (pr_number);
+CREATE INDEX IF NOT EXISTS idx_issues_repository    ON issues (repository_full_name);
+CREATE INDEX IF NOT EXISTS idx_issues_created_at    ON issues (created_at);
+CREATE INDEX IF NOT EXISTS idx_issues_closed_at     ON issues (closed_at);

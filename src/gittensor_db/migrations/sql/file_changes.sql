@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS file_changes (
 
     -- Metadata with automatic timestamps
     created_at       TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
-    updated_at       TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago')
+    updated_at       TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
 
     -- Foreign key constraint
     FOREIGN KEY (pr_diff_id)
@@ -28,4 +28,4 @@ CREATE TABLE IF NOT EXISTS file_changes (
 );
 
 -- Indexes for performance
-CREATE INDEX idx_file_changes_pr_diff_id    IF NOT EXISTS ON    file_changes (pr_diff_id);
+CREATE INDEX IF NOT EXISTS idx_file_changes_pr_diff_id    ON file_changes (pr_diff_id);

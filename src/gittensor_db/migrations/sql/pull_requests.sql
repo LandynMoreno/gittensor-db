@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS pull_requests (
 
     -- Metadata with automatic timestamps
     created_at           TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
-    updated_at           TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago')
+    updated_at           TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
 
     PRIMARY KEY (number, repository_full_name),
 
@@ -31,6 +31,6 @@ CREATE TABLE IF NOT EXISTS pull_requests (
 );
 
 -- Indexes for performance
-CREATE INDEX idx_pull_requests_author        IF NOT EXISTS ON    pull_requests (author_login);
-CREATE INDEX idx_pull_requests_merged_at     IF NOT EXISTS ON    pull_requests (merged_at);
-CREATE INDEX idx_pull_requests_merged_by     IF NOT EXISTS ON    pull_requests (merged_by_login);
+CREATE INDEX IF NOT EXISTS idx_pull_requests_author       ON pull_requests (author_login);
+CREATE INDEX IF NOT EXISTS idx_pull_requests_merged_at    ON pull_requests (merged_at);
+CREATE INDEX IF NOT EXISTS idx_pull_requests_merged_by    ON pull_requests (merged_by_login);

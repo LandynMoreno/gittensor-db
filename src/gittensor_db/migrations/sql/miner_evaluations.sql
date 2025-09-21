@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS miner_evaluations (
     -- Metadata with automatic timestamps
     evaluation_timestamp TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
     created_at           TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
-    updated_at           TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago')
+    updated_at           TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
 
     -- Unique constraint to prevent duplicate evaluations
     CONSTRAINT unique_evaluation
@@ -23,6 +23,6 @@ CREATE TABLE IF NOT EXISTS miner_evaluations (
 );
 
 -- Indexes for performance
-CREATE INDEX idx_miner_evaluations_uid                    IF NOT EXISTS ON    miner_evaluations (uid);
-CREATE INDEX idx_miner_evaluations_github_id              IF NOT EXISTS ON    miner_evaluations (github_id);
-CREATE INDEX idx_miner_evaluations_evaluation_timestamp   IF NOT EXISTS ON    miner_evaluations (evaluation_timestamp);
+CREATE INDEX IF NOT EXISTS idx_miner_evaluations_uid                     ON miner_evaluations (uid);
+CREATE INDEX IF NOT EXISTS idx_miner_evaluations_github_id               ON miner_evaluations (github_id);
+CREATE INDEX IF NOT EXISTS idx_miner_evaluations_evaluation_timestamp    ON miner_evaluations (evaluation_timestamp);
