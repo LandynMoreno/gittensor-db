@@ -5,6 +5,7 @@ These mirror your gittensor.classes but are self-contained.
 from dataclasses import dataclass, field
 from typing import Optional, List, Set, Callable
 from datetime import datetime
+from src.gittensor_db.utils.utils import parse_github_timestamp
 
 GITHUB_DOMAIN = 'https://github.com/'
 
@@ -141,16 +142,16 @@ class PullRequest:
                     pr_number=pr_data['number'],
                     repository_full_name=repository.full_name,
                     title=issue['title'],
-                    created_at=datetime.fromisoformat(issue['createdAt'].rstrip("Z")).replace(tzinfo=datetime.now().astimezone().tzinfo),
-                    closed_at=datetime.fromisoformat(issue['closedAt'].rstrip("Z")).replace(tzinfo=datetime.now().astimezone().tzinfo),
+                    created_at=parse_github_timestamp(issue['createdAt']),
+                    closed_at=parse_github_timestamp(issue['closedAt']),
                 ))
 
         return cls(
             number=pr_data['number'],
             title=pr_data['title'],
             repository=repository,
-            merged_at=datetime.fromisoformat(pr_data['mergedAt'].rstrip("Z")).replace(tzinfo=datetime.now().astimezone().tzinfo),
-            created_at=datetime.fromisoformat(pr_data['createdAt'].rstrip("Z")).replace(tzinfo=datetime.now().astimezone().tzinfo),
+            merged_at=parse_github_timestamp(pr_data['mergedAt']),
+            created_at=parse_github_timestamp(pr_data['createdAt']),
             additions=pr_data['additions'],
             deletions=pr_data['deletions'],
             author_login=pr_data['author']['login'],

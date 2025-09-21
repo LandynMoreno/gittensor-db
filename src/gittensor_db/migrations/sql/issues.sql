@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS issues (
 
     PRIMARY KEY (number, repository_full_name),
 
-    -- Foreign key constraint to pull_requests table
+    -- Foreign key constraint
     FOREIGN KEY (pr_number, repository_full_name)
         REFERENCES pull_requests(number, repository_full_name)
             ON DELETE CASCADE

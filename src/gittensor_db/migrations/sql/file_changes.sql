@@ -20,6 +20,11 @@ CREATE TABLE IF NOT EXISTS file_changes (
     FOREIGN KEY (pr_diff_id)
         REFERENCES pr_diffs(id)
             ON DELETE CASCADE
+    
+    -- Data integrity constraints
+    CONSTRAINT chk_file_changes_additions    CHECK    (additions >= 0);
+    CONSTRAINT chk_file_changes_deletions    CHECK    (deletions >= 0);
+    CONSTRAINT chk_file_changes_changes      CHECK    (changes   >= 0);
 );
 
 -- Indexes for performance

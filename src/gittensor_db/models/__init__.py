@@ -13,7 +13,8 @@ from .domain_models import (
 __all__ = [
     'Repository',
     'FileChange',
-    'PRDiff', 
+    'PRDiff',
+    'Issue',
     'PullRequest',
     'MinerEvaluation'
 ]

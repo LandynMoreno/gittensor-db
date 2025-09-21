@@ -17,14 +17,20 @@ CREATE TABLE IF NOT EXISTS pull_requests (
     created_at           TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
     updated_at           TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
 
-    PRIMARY KEY (number, repository_full_name)
+    PRIMARY KEY (number, repository_full_name),
 
+    -- Foreign key constraint
     FOREIGN KEY (repository_full_name)
         REFERENCES repositories(full_name)
             ON DELETE CASCADE
+
+    -- Data integrity constraints
+    CONSTRAINT chk_pull_requests_additions    CHECK    (additions >= 0);
+    CONSTRAINT chk_pull_requests_deletions    CHECK    (deletions >= 0);
+    CONSTRAINT chk_pull_requests_commits      CHECK    (commits   >= 0);
 );
 
 -- Indexes for performance
-CREATE INDEX idx_pull_requests_author        IF NOT EXISTS ON    pull_requests(author_login);
-CREATE INDEX idx_pull_requests_merged_at     IF NOT EXISTS ON    pull_requests(merged_at);
-CREATE INDEX idx_pull_requests_merged_by     IF NOT EXISTS ON    pull_requests(merged_by_login);
+CREATE INDEX idx_pull_requests_author        IF NOT EXISTS ON    pull_requests (author_login);
+CREATE INDEX idx_pull_requests_merged_at     IF NOT EXISTS ON    pull_requests (merged_at);
+CREATE INDEX idx_pull_requests_merged_by     IF NOT EXISTS ON    pull_requests (merged_by_login);
