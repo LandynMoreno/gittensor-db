@@ -7,8 +7,8 @@ CREATE TABLE IF NOT EXISTS repositories (
     owner            VARCHAR(255)     NOT NULL,
 
     -- Metadata with automatic timestamps
-    created_at       TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
-    updated_at       TIMESTAMP        DEFAULT CURRENT_TIMESTAMP
+    created_at       TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
+    updated_at       TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago')
 );
 
 -- Indexes for performance

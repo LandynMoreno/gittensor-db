@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS pr_diffs (
     total_changes        INTEGER          DEFAULT 0,
 
     -- Metadata with automatic timestamps
-    created_at           TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
-    updated_at           TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+    created_at           TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
+    updated_at           TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago')
 
     -- Foreign key constraints
     FOREIGN KEY (pr_number, repository_full_name)
@@ -24,11 +24,11 @@ CREATE TABLE IF NOT EXISTS pr_diffs (
 
     -- Unique constraint to prevent duplicate pr_diffs for same evaluation and PR
     CONSTRAINT unique_pr_diff 
-        UNIQUE (miner_evaluation_id, pr_number, repository_full_name)
+        UNIQUE (miner_evaluation_id, pr_number, repository_full_name),
 
     -- Data integrity constraints
-    CONSTRAINT chk_pr_diffs_earned_score     CHECK    (earned_score  >= 0);
-    CONSTRAINT chk_pr_diffs_total_changes    CHECK    (total_changes >= 0);
+    CONSTRAINT chk_pr_diffs_earned_score     CHECK    (earned_score  >= 0),
+    CONSTRAINT chk_pr_diffs_total_changes    CHECK    (total_changes >= 0)
 );
 
 -- Indexes for performance

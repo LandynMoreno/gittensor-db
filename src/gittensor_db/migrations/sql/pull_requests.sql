@@ -14,20 +14,20 @@ CREATE TABLE IF NOT EXISTS pull_requests (
     merged_by_login      VARCHAR(255),
 
     -- Metadata with automatic timestamps
-    created_at           TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
-    updated_at           TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+    created_at           TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
+    updated_at           TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago')
 
     PRIMARY KEY (number, repository_full_name),
 
     -- Foreign key constraint
     FOREIGN KEY (repository_full_name)
         REFERENCES repositories(full_name)
-            ON DELETE CASCADE
+            ON DELETE CASCADE,
 
     -- Data integrity constraints
-    CONSTRAINT chk_pull_requests_additions    CHECK    (additions >= 0);
-    CONSTRAINT chk_pull_requests_deletions    CHECK    (deletions >= 0);
-    CONSTRAINT chk_pull_requests_commits      CHECK    (commits   >= 0);
+    CONSTRAINT chk_pull_requests_additions    CHECK    (additions >= 0),
+    CONSTRAINT chk_pull_requests_deletions    CHECK    (deletions >= 0),
+    CONSTRAINT chk_pull_requests_commits      CHECK    (commits   >= 0)
 );
 
 -- Indexes for performance

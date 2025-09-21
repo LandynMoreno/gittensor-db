@@ -13,9 +13,9 @@ CREATE TABLE IF NOT EXISTS miner_evaluations (
     unique_repos_count   INTEGER          DEFAULT 0,
 
     -- Metadata with automatic timestamps
-    evaluation_timestamp TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
-    created_at           TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
-    updated_at           TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+    evaluation_timestamp TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
+    created_at           TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
+    updated_at           TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago')
 
     -- Unique constraint to prevent duplicate evaluations
     CONSTRAINT unique_evaluation

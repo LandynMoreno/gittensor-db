@@ -11,6 +11,7 @@ from .repositories import (
     RepositoriesRepository,
     PullRequestsRepository,
     PRDiffsRepository,
+    IssuesRepository,
     FileChangesRepository,
     MinerEvaluationsRepository,
 )
@@ -24,6 +25,7 @@ __all__ = [
     "RepositoriesRepository", 
     "PullRequestsRepository",
     "PRDiffsRepository",
+    "IssuesRepository",
     "FileChangesRepository",
     "MinerEvaluationsRepository",
 ]

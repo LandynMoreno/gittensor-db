@@ -104,7 +104,7 @@ SET_FILE_CHANGES_FOR_PR_DIFF = """
 INSERT INTO file_changes (
     pr_diff_id, filename, changes, additions, deletions, status, patch, file_extension
 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-ON CONFLICT (pr_diff_id, , file_extension)
+ON CONFLICT (pr_diff_id, file_extension)
 DO NOTHING
 """
 
@@ -131,7 +131,7 @@ SET_MINER_EVALUATION = """
 INSERT INTO miner_evaluations (
     uid, github_id, failed_reason, total_score,
     total_lines_changed, total_open_prs, total_prs, unique_repos_count
-) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
 """
 
 GET_EVALUATIONS_BY_TIMEFRAME = """

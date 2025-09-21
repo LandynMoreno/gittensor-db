@@ -6,6 +6,7 @@ from .domain_models import (
     Repository,
     FileChange, 
     PRDiff,
+    Issue,
     PullRequest,
     MinerEvaluation
 )
