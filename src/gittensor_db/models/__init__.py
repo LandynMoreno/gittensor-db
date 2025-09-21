@@ -6,6 +6,7 @@ from .domain_models import (
     Repository,
     FileChange, 
     PRDiff,
+    Issue,
     PullRequest,
     MinerEvaluation
 )
@@ -13,7 +14,8 @@ from .domain_models import (
 __all__ = [
     'Repository',
     'FileChange',
-    'PRDiff', 
+    'PRDiff',
+    'Issue',
     'PullRequest',
     'MinerEvaluation'
 ]
