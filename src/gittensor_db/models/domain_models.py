@@ -5,7 +5,7 @@ These mirror your gittensor.classes but are self-contained.
 from dataclasses import dataclass, field
 from typing import Optional, List, Set, Callable
 from datetime import datetime
-from src.gittensor_db.utils.utils import parse_github_timestamp
+from ..utils.utils import parse_github_timestamp
 
 GITHUB_DOMAIN = 'https://github.com/'
 
