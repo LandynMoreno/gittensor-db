@@ -104,9 +104,9 @@ class PullRequest:
     repository: Repository
     merged_at: datetime
     created_at: datetime
+    author_login: str
     additions: int = 0
     deletions: int = 0
-    author_login: str
     merged_by_login: Optional[str] = None
     commits: int = 0
     issues: Optional[List[Issue]] = None
