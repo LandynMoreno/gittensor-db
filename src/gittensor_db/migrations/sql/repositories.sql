@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS repositories (
 
     -- Metadata with automatic timestamps
     created_at       TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
-    updated_at       TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago'),
+    updated_at       TIMESTAMP        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago')
 );
 
 -- Indexes for performance
