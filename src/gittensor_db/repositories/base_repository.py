@@ -22,18 +22,18 @@ class BaseRepository:
         self.logger = logging.getLogger(self.__class__.__name__)
 
     @contextmanager
-    def get_cursor(self, dictionary: bool = True):
+    def get_cursor(self):
         """
         Context manager for database cursor operations.
         Automatically handles cursor cleanup.
         """
-        cursor = self.db.cursor(dictionary=dictionary)
+        cursor = self.db.cursor()
         try:
             yield cursor
         finally:
             cursor.close()
 
-    def execute_query(self, query: str, params: tuple = (), dictionary: bool = True) -> List[Dict[str, Any]]:
+    def execute_query(self, query: str, params: tuple = ()) -> List[Dict[str, Any]]:
         """
         Execute a SELECT query and return results.
 
@@ -45,11 +45,11 @@ class BaseRepository:
         Returns:
             List of result dictionaries
         """
-        with self.get_cursor(dictionary=dictionary) as cursor:
+        with self.get_cursor() as cursor:
             cursor.execute(query, params)
             return cursor.fetchall()
 
-    def execute_single_query(self, query: str, params: tuple = (), dictionary: bool = True) -> Optional[Dict[str, Any]]:
+    def execute_single_query(self, query: str, params: tuple = ()) -> Optional[Dict[str, Any]]:
         """
         Execute a SELECT query and return single result.
 
@@ -61,7 +61,7 @@ class BaseRepository:
         Returns:
             Single result dictionary or None
         """
-        with self.get_cursor(dictionary=dictionary) as cursor:
+        with self.get_cursor() as cursor:
             cursor.execute(query, params)
             return cursor.fetchone()
 
@@ -77,7 +77,7 @@ class BaseRepository:
             True if successful, False otherwise
         """
         try:
-            with self.get_cursor(dictionary=False) as cursor:
+            with self.get_cursor() as cursor:
                 cursor.execute(query, params)
                 self.db.commit()
                 return True
