@@ -32,6 +32,7 @@ class FileChange:
     status: str  # "added", "modified", "removed", etc.
     patch: Optional[str] = None  # The actual diff content
     file_extension: Optional[str] = None
+    id: Optional[int] = None  # Database primary key
     
     def __post_init__(self):
         if self.file_extension is None:
@@ -85,12 +86,12 @@ class PRDiff:
 @dataclass
 class Issue:
     """Represents an issue that belongs to a pull request"""
-    number: int
-    pr_number: int
-    repository_full_name: str
-    title: str
-    created_at: datetime
-    closed_at: datetime
+    number: int  # Required
+    pr_number: int  # Required
+    repository_full_name: str  # Required
+    title: str  # Required
+    created_at: Optional[datetime] = None  # Optional - many trackers have missing/legacy values
+    closed_at: Optional[datetime] = None  # Optional - many trackers have missing/legacy values
 
     def construct_github_url(self) -> str:
         return GITHUB_DOMAIN + f"{self.repository_full_name}/issues/{self.number}"
@@ -99,22 +100,19 @@ class Issue:
 @dataclass
 class PullRequest:
     """Represents a merged pull request with relevant metadata"""
-    number: int
-    title: str
-    repository: Repository
-    merged_at: datetime
-    created_at: datetime
-    author_login: str
-    additions: int = 0
-    deletions: int = 0
-    merged_by_login: Optional[str] = None
-    commits: int = 0
+    number: int  # Required
+    title: str  # Required
+    repository: Repository  # Required
+    repository_full_name: str  # Required - direct access for API compatibility
+    author_login: str  # Required
+    created_at: datetime  # Required
+    additions: int = 0  # Required with default
+    deletions: int = 0  # Required with default
+    commits: int = 0  # Required with default
+    merged_at: Optional[datetime] = None  # Optional - can be None for draft PRs
+    merged_by_login: Optional[str] = None  # Optional
     issues: Optional[List[Issue]] = None
     
-    @property
-    def repository_full_name(self) -> str:
-        """For backward compatibility with existing code"""
-        return self.repository.full_name
     
     @property
     def total_changes(self) -> int:
@@ -164,14 +162,17 @@ class PullRequest:
 @dataclass
 class MinerEvaluation:
     uid: int
-    github_id: Optional[str] = None
+    id: int  # Database primary key - required
+    total_score: float = 0.0  # Required with default
+    total_lines_changed: int = 0  # Required with default
+    total_open_prs: int = 0  # Required with default
+    unique_repos_count: int = 0  # Required with default
+    github_id: Optional[str] = None  # Optional - some miners may not map to GitHub yet
     github_pat: Optional[str] = None
-    failed_reason: Optional[str] = None
+    failed_reason: Optional[str] = None  # Optional
+    evaluation_timestamp: Optional[datetime] = None  # Optional - can be missing
     valid_prs: List['PRDiff'] = field(default_factory=list)
     unique_repos_contributed_to: Set[str] = field(default_factory=set)
-    total_score: float = 0.0
-    total_lines_changed: int = 0
-    total_open_prs: int = 0
     
     @property
     def total_prs(self) -> int:
@@ -185,6 +186,7 @@ class MinerEvaluation:
         
         self.total_lines_changed = sum(pr.total_changes for pr in self.valid_prs)
         self.unique_repos_contributed_to = set(pr.repository_full_name for pr in self.valid_prs)
+        self.unique_repos_count = len(self.unique_repos_contributed_to)
     
     def calculate_score_total(self):
         """Calculate total score by summing earned scores from all PRs"""

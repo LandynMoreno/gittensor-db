@@ -6,8 +6,8 @@ CREATE TABLE IF NOT EXISTS issues (
     pr_number            INTEGER          NOT NULL,
     repository_full_name VARCHAR(255)     NOT NULL,
     title                TEXT             NOT NULL,
-    created_at           TIMESTAMP        NOT NULL,
-    closed_at            TIMESTAMP        NOT NULL,
+    created_at           TIMESTAMP,        -- Nullable for API compatibility
+    closed_at            TIMESTAMP,        -- Nullable for API compatibility
 
     PRIMARY KEY (number, repository_full_name),
 

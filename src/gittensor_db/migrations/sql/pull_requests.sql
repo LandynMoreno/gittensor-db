@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS pull_requests (
     number               INTEGER          NOT NULL,
     repository_full_name VARCHAR(255)     NOT NULL,
     title                TEXT             NOT NULL,
-    merged_at            TIMESTAMP        NOT NULL,
+    merged_at            TIMESTAMP,        -- Nullable for draft PRs
     pr_created_at        TIMESTAMP        NOT NULL,
     additions            INTEGER          DEFAULT 0,
     deletions            INTEGER          DEFAULT 0,

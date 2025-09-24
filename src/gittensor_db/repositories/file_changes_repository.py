@@ -24,7 +24,8 @@ class FileChangesRepository(BaseRepository):
             deletions=row['deletions'],
             status=row['status'],
             patch=row['patch'],
-            file_extension=row.get('file_extension')
+            file_extension=row.get('file_extension'),
+            id=row.get('id')
         )
 
     def get_file_change(self, file_change_id: int) -> Optional[FileChange]:

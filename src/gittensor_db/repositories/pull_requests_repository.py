@@ -17,7 +17,6 @@ class PullRequestsRepository(BaseRepository):
         super().__init__(db_connection)
 
     def _map_to_pull_request(self, row: Dict[str, Any]) -> PullRequest:
-        """Map database row to PullRequest object"""
         repository = Repository(
             name=row['name'],
             owner=row['owner']
@@ -27,13 +26,14 @@ class PullRequestsRepository(BaseRepository):
             number=row['number'],
             title=row['title'],
             repository=repository,
-            merged_at=row['merged_at'],
-            created_at=row['pr_created_at'],
-            additions=row['additions'],
-            deletions=row['deletions'],
-            commits=row.get('commits', 0),
+            repository_full_name=row['repository_full_name'],
             author_login=row['author_login'],
-            merged_by_login=row['merged_by_login']
+            created_at=row['pr_created_at'],  # DB column pr_created_at maps to model created_at
+            additions=row['additions'] or 0,
+            deletions=row['deletions'] or 0,
+            commits=row.get('commits', 0),
+            merged_at=row['merged_at'],  # Optional
+            merged_by_login=row['merged_by_login']  # Optional
         )
 
     def _map_to_pull_request_with_diffs(self, rows: List[Dict[str, Any]]) -> Optional[PullRequest]:
@@ -51,13 +51,14 @@ class PullRequestsRepository(BaseRepository):
             number=first_row['number'],
             title=first_row['title'],
             repository=repository,
-            merged_at=first_row['merged_at'],
-            created_at=first_row['pr_created_at'],
-            additions=first_row['additions'],
-            deletions=first_row['deletions'],
-            commits=first_row.get('commits', 0),
+            repository_full_name=first_row['repository_full_name'],
             author_login=first_row['author_login'],
-            merged_by_login=first_row['merged_by_login']
+            created_at=first_row['pr_created_at'],  # DB column pr_created_at maps to model created_at
+            additions=first_row['additions'] or 0,
+            deletions=first_row['deletions'] or 0,
+            commits=first_row.get('commits', 0),
+            merged_at=first_row['merged_at'],  # Optional
+            merged_by_login=first_row['merged_by_login']  # Optional
         )
 
         # Create nested PRDiff with FileChanges if they exist

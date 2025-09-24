@@ -12,7 +12,6 @@ from ..queries import (
     GET_EVALUATIONS_BY_TIMEFRAME
 )
 
-
 class MinerEvaluationsRepository(BaseRepository):
     def __init__(self, db_connection):
         super().__init__(db_connection)
@@ -21,11 +20,14 @@ class MinerEvaluationsRepository(BaseRepository):
         """Map database row to MinerEvaluation object"""
         return MinerEvaluation(
             uid=row['uid'],
-            github_id=row['github_id'],
-            failed_reason=row['failed_reason'],
-            total_score=float(row['total_score']) if row['total_score'] else 0.0,
+            id=row['id'],  # Required field
+            total_score=float(row['total_score']) if row['total_score'] is not None else 0.0,
             total_lines_changed=row['total_lines_changed'] or 0,
             total_open_prs=row['total_open_prs'] or 0,
+            unique_repos_count=row['unique_repos_count'] or 0,
+            github_id=row['github_id'],  # Optional
+            failed_reason=row['failed_reason'],  # Optional
+            evaluation_timestamp=row['evaluation_timestamp']  # Optional
         )
 
     def get_miner_evaluation(self, evaluation_id: int) -> Optional[MinerEvaluation]:
@@ -71,7 +73,7 @@ class MinerEvaluationsRepository(BaseRepository):
             evaluation.total_lines_changed,
             evaluation.total_open_prs,
             evaluation.total_prs,
-            len(evaluation.unique_repos_contributed_to) if evaluation.unique_repos_contributed_to else 0
+            evaluation.unique_repos_count
         )
         return self.set_entity(query, params)
 
