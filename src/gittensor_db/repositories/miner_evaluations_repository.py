@@ -27,7 +27,8 @@ class MinerEvaluationsRepository(BaseRepository):
             unique_repos_count=row['unique_repos_count'] or 0,
             github_id=row['github_id'],  # Optional
             failed_reason=row['failed_reason'],  # Optional
-            evaluation_timestamp=row['evaluation_timestamp']  # Optional
+            evaluation_timestamp=row['evaluation_timestamp'],  # Optional
+            stored_total_prs=row['total_prs'] if 'total_prs' in row else None  # Map DB total_prs
         )
 
     def get_miner_evaluation(self, evaluation_id: int) -> Optional[MinerEvaluation]:

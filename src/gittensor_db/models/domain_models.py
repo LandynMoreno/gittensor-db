@@ -173,11 +173,12 @@ class MinerEvaluation:
     evaluation_timestamp: Optional[datetime] = None  # Optional - can be missing
     valid_prs: List['PRDiff'] = field(default_factory=list)
     unique_repos_contributed_to: Set[str] = field(default_factory=set)
+    stored_total_prs: Optional[int] = None  # Database stored value for total_prs
     
     @property
     def total_prs(self) -> int:
-        """Total number of valid PRs"""
-        return len(self.valid_prs)
+        """Total number of valid PRs - uses stored DB value if available, otherwise computes from valid_prs"""
+        return self.stored_total_prs if self.stored_total_prs is not None else len(self.valid_prs)
     
     def calculate_metric_totals(self):
         """Calculate total lines changed and unique repositories from PRs"""

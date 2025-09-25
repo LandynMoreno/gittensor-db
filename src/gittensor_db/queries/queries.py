@@ -123,7 +123,7 @@ SELECT id, uid, github_id, failed_reason, total_score,
        unique_repos_count, evaluation_timestamp
 FROM miner_evaluations
 WHERE uid = %s
-ORDER BY evaluation_timestamp DESC
+ORDER BY evaluation_timestamp DESC NULLS LAST, id DESC
 LIMIT 1
 """
 
