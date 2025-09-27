@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS file_changes (
     -- Foreign key constraint
     FOREIGN KEY (pr_diff_id)
         REFERENCES pr_diffs(id)
-            ON DELETE CASCADE
+            ON DELETE CASCADE,
     
     -- Data integrity constraints
     CONSTRAINT chk_file_changes_additions    CHECK    (additions >= 0),

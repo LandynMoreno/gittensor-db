@@ -36,7 +36,7 @@ def create_database_connection() -> Optional[object]:
 
         connection = psycopg2.connect(**db_config)
         connection.autocommit = False
-        bt.logging.info("Successfully connected to PostgreSQL database for validation result storage")
+        bt.logging.success("Successfully connected to PostgreSQL database for validation result storage")
         return connection
 
     except psycopg2.Error as e:
