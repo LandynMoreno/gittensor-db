@@ -7,7 +7,8 @@ from .base_repository import BaseRepository
 from ..queries import (
     GET_FILE_CHANGE,
     GET_FILE_CHANGES_BY_PR_DIFF,
-    SET_FILE_CHANGES_FOR_PR_DIFF
+    SET_FILE_CHANGES_FOR_PR_DIFF,
+    BULK_UPSERT_FILE_CHANGES
 )
 
 
@@ -105,3 +106,48 @@ class FileChangesRepository(BaseRepository):
             True if successful, False otherwise
         """
         return self.set_file_changes_for_pr_diff(pr_diff_id, [file_change])
+
+    def store_file_changes_bulk(self, file_changes: List[FileChange]) -> int:
+        """
+        Bulk insert/update file changes with efficient SQL conflict resolution
+
+        Args:
+            file_changes: List of FileChange objects to store
+
+        Returns:
+            Count of successfully stored file changes
+        """
+        if not file_changes:
+            return 0
+
+        # Prepare data for bulk insert
+        values = []
+        for file_change in file_changes:
+            values.append((
+                None,  # pr_diff_id - not needed for bulk storage
+                file_change.filename,
+                file_change.changes,
+                file_change.additions,
+                file_change.deletions,
+                file_change.status,
+                file_change.patch,
+                file_change.file_extension or file_change._calculate_file_extension()
+            ))
+
+        try:
+            with self.get_cursor(dictionary=False) as cursor:
+                # Use psycopg2's execute_values for efficient bulk insert
+                from psycopg2.extras import execute_values
+                execute_values(
+                    cursor,
+                    BULK_UPSERT_FILE_CHANGES.replace('VALUES %s', 'VALUES %s'),
+                    values,
+                    template=None,
+                    page_size=100
+                )
+                self.db.commit()
+                return len(values)
+        except Exception as e:
+            self.db.rollback()
+            self.logger.error(f"Error in bulk file change storage: {e}")
+            return 0

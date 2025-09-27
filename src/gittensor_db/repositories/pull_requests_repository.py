@@ -2,13 +2,14 @@
 Repository for handling database operations for PullRequest entities
 """
 from typing import Optional, List, Dict, Any
-from ..models.domain_models import PullRequest, Repository, PRDiff, FileChange
+from ..models.domain_models import PullRequest, PRDiff, FileChange
 from .base_repository import BaseRepository
 from ..queries import (
     GET_PULL_REQUEST,
     SET_PULL_REQUEST,
     GET_PULL_REQUESTS_BY_REPOSITORY,
-    GET_PULL_REQUEST_WITH_DIFFS
+    GET_PULL_REQUEST_WITH_DIFFS,
+    BULK_UPSERT_PULL_REQUESTS
 )
 
 
@@ -17,22 +18,17 @@ class PullRequestsRepository(BaseRepository):
         super().__init__(db_connection)
 
     def _map_to_pull_request(self, row: Dict[str, Any]) -> PullRequest:
-        repository = Repository(
-            name=row['name'],
-            owner=row['owner']
-        )
-
+        """Map database row to PullRequest object"""
         return PullRequest(
             number=row['number'],
             title=row['title'],
-            repository=repository,
             repository_full_name=row['repository_full_name'],
-            author_login=row['author_login'],
+            merged_at=row['merged_at'],
             created_at=row['pr_created_at'],  # DB column pr_created_at maps to model created_at
             additions=row['additions'] or 0,
             deletions=row['deletions'] or 0,
             commits=row.get('commits', 0),
-            merged_at=row['merged_at'],  # Optional
+            author_login=row['author_login'],
             merged_by_login=row['merged_by_login']  # Optional
         )
 
@@ -42,22 +38,17 @@ class PullRequestsRepository(BaseRepository):
             return None
 
         first_row = rows[0]
-        repository = Repository(
-            name=first_row['name'],
-            owner=first_row['owner']
-        )
 
         pull_request = PullRequest(
             number=first_row['number'],
             title=first_row['title'],
-            repository=repository,
             repository_full_name=first_row['repository_full_name'],
-            author_login=first_row['author_login'],
+            merged_at=first_row['merged_at'],
             created_at=first_row['pr_created_at'],  # DB column pr_created_at maps to model created_at
             additions=first_row['additions'] or 0,
             deletions=first_row['deletions'] or 0,
             commits=first_row.get('commits', 0),
-            merged_at=first_row['merged_at'],  # Optional
+            author_login=first_row['author_login'],
             merged_by_login=first_row['merged_by_login']  # Optional
         )
 
@@ -191,3 +182,50 @@ class PullRequestsRepository(BaseRepository):
                 pull_requests.append(pr)
 
         return pull_requests
+
+    def store_pull_requests_bulk(self, pull_requests: List[PullRequest]) -> int:
+        """
+        Bulk insert/update pull requests with efficient SQL conflict resolution
+
+        Args:
+            pull_requests: List of PullRequest objects to store
+
+        Returns:
+            Count of successfully stored pull requests
+        """
+        if not pull_requests:
+            return 0
+
+        # Prepare data for bulk insert
+        values = []
+        for pr in pull_requests:
+            values.append((
+                pr.number,
+                pr.repository_full_name,
+                pr.title,
+                pr.merged_at,
+                pr.created_at,
+                pr.additions,
+                pr.deletions,
+                pr.commits,
+                pr.author_login,
+                pr.merged_by_login
+            ))
+
+        try:
+            with self.get_cursor(dictionary=False) as cursor:
+                # Use psycopg2's execute_values for efficient bulk insert
+                from psycopg2.extras import execute_values
+                execute_values(
+                    cursor,
+                    BULK_UPSERT_PULL_REQUESTS.replace('VALUES %s', 'VALUES %s'),
+                    values,
+                    template=None,
+                    page_size=100
+                )
+                self.db.commit()
+                return len(values)
+        except Exception as e:
+            self.db.rollback()
+            self.logger.error(f"Error in bulk pull request storage: {e}")
+            return 0
