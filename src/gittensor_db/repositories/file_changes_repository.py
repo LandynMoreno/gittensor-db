@@ -73,7 +73,7 @@ class FileChangesRepository(BaseRepository):
         query = SET_FILE_CHANGES_FOR_PR_DIFF
 
         try:
-            with self.get_cursor(dictionary=False) as cursor:
+            with self.get_cursor() as cursor:
                 for file_change in file_changes:
                     params = (
                         pr_diff_id,
@@ -135,7 +135,7 @@ class FileChangesRepository(BaseRepository):
             ))
 
         try:
-            with self.get_cursor(dictionary=False) as cursor:
+            with self.get_cursor() as cursor:
                 # Use psycopg2's execute_values for efficient bulk insert
                 from psycopg2.extras import execute_values
                 execute_values(

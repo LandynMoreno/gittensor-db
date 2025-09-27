@@ -74,7 +74,7 @@ class PRDiffsRepository(BaseRepository):
                 pr_diff.earned_score
             )
 
-            with self.get_cursor(dictionary=False) as cursor:
+            with self.get_cursor() as cursor:
                 cursor.execute(query, params)
                 pr_diff_id = cursor.lastrowid
                 self.db.commit()
@@ -147,7 +147,7 @@ class PRDiffsRepository(BaseRepository):
             ))
 
         try:
-            with self.get_cursor(dictionary=False) as cursor:
+            with self.get_cursor() as cursor:
                 # Use psycopg2's execute_values for efficient bulk insert
                 from psycopg2.extras import execute_values
                 execute_values(

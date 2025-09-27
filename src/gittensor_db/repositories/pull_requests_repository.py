@@ -213,7 +213,7 @@ class PullRequestsRepository(BaseRepository):
             ))
 
         try:
-            with self.get_cursor(dictionary=False) as cursor:
+            with self.get_cursor() as cursor:
                 # Use psycopg2's execute_values for efficient bulk insert
                 from psycopg2.extras import execute_values
                 execute_values(
