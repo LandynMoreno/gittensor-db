@@ -35,5 +35,12 @@ __all__ = [
     # Issue queries
     'GET_ISSUE',
     'GET_ISSUES_BY_REPOSITORY',
-    'SET_ISSUE'
+    'SET_ISSUE',
+
+    # Bulk Upsert queries
+    'BULK_UPSERT_REPOSITORIES',
+    'BULK_UPSERT_PULL_REQUESTS',
+    'BULK_UPSERT_ISSUES',
+    'BULK_UPSERT_PR_DIFFS',
+    'BULK_UPSERT_FILE_CHANGES'
 ]

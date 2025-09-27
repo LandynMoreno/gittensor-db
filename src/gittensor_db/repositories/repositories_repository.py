@@ -1,13 +1,14 @@
 """
 Repository for handling database operations for Repository entities
 """
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Set
 from ..models.domain_models import Repository
 from .base_repository import BaseRepository
 from ..queries import (
     GET_REPOSITORY,
     SET_REPOSITORY,
-    GET_ALL_REPOSITORIES
+    GET_ALL_REPOSITORIES,
+    BULK_UPSERT_REPOSITORIES
 )
 
 
@@ -59,3 +60,44 @@ class RepositoriesRepository(BaseRepository):
             List of Repository objects
         """
         return self.query_multiple(GET_ALL_REPOSITORIES, (), self._map_to_repository)
+
+    def store_repositories_bulk(self, repository_full_names: Set[str]) -> int:
+        """
+        Bulk insert/update repositories given their full names as strings using efficient SQL.
+
+        Args:
+            repository_full_names: Set of strings like {"owner/repo", "other/owner"}
+
+        Returns:
+            Count of successfully stored repositories
+        """
+        if not repository_full_names:
+            return 0
+
+        # Prepare data for bulk insert
+        values = []
+        for full_name in repository_full_names:
+            parts = full_name.split('/')
+            if len(parts) == 2:
+                values.append((full_name, parts[1], parts[0]))  # (full_name, name, owner)
+
+        if not values:
+            return 0
+
+        try:
+            with self.get_cursor(dictionary=False) as cursor:
+                # Use psycopg2's execute_values for efficient bulk insert
+                from psycopg2.extras import execute_values
+                execute_values(
+                    cursor,
+                    BULK_UPSERT_REPOSITORIES.replace('VALUES %s', 'VALUES %s'),
+                    values,
+                    template=None,
+                    page_size=100
+                )
+                self.db.commit()
+                return len(values)
+        except Exception as e:
+            self.db.rollback()
+            self.logger.error(f"Error in bulk repository storage: {e}")
+            return 0

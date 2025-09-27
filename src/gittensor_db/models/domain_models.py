@@ -14,11 +14,11 @@ class Repository:
     """Repository information"""
     name: str
     owner: str
-    
+
     @property
     def full_name(self) -> str:
         return f"{self.owner}/{self.name}"
-    
+
     def construct_github_url(self) -> str:
         return GITHUB_DOMAIN + self.full_name
 
@@ -102,18 +102,15 @@ class PullRequest:
     """Represents a merged pull request with relevant metadata"""
     number: int  # Required
     title: str  # Required
-    repository: Repository  # Required
-    repository_full_name: str  # Required - direct access for API compatibility
+    repository_full_name: str  # Required - primary field for API compatibility
     author_login: str  # Required
+    merged_at: datetime  # Required
     created_at: datetime  # Required
     additions: int = 0  # Required with default
     deletions: int = 0  # Required with default
-    commits: int = 0  # Required with default
-    merged_at: Optional[datetime] = None  # Optional - can be None for draft PRs
     merged_by_login: Optional[str] = None  # Optional
+    commits: int = 0  # Required with default
     issues: Optional[List[Issue]] = None
-    
-    
     @property
     def total_changes(self) -> int:
         """Total lines changed (additions + deletions)"""
@@ -126,10 +123,7 @@ class PullRequest:
     def from_graphql_response(cls, pr_data: dict) -> 'PullRequest':
         """Create PullRequest from GraphQL API response"""
         repo_data = pr_data['repository']
-        repository = Repository(
-            name=repo_data['name'],
-            owner=repo_data['owner']['login']
-        )
+        repository_full_name = f"{repo_data['owner']['login']}/{repo_data['name']}"
 
         raw_issues = pr_data['closingIssuesReferences']['nodes']
         issues = []
@@ -138,7 +132,7 @@ class PullRequest:
                 issues.append(Issue(
                     number=issue['number'],
                     pr_number=pr_data['number'],
-                    repository_full_name=repository.full_name,
+                    repository_full_name=repository_full_name,
                     title=issue['title'],
                     created_at=parse_github_timestamp(issue['createdAt']),
                     closed_at=parse_github_timestamp(issue['closedAt']),
@@ -147,7 +141,7 @@ class PullRequest:
         return cls(
             number=pr_data['number'],
             title=pr_data['title'],
-            repository=repository,
+            repository_full_name=repository_full_name,
             merged_at=parse_github_timestamp(pr_data['mergedAt']),
             created_at=parse_github_timestamp(pr_data['createdAt']),
             additions=pr_data['additions'],
@@ -172,6 +166,7 @@ class MinerEvaluation:
     failed_reason: Optional[str] = None  # Optional
     evaluation_timestamp: Optional[datetime] = None  # Optional - can be missing
     valid_prs: List['PRDiff'] = field(default_factory=list)
+    pull_requests: List[PullRequest] = field(default_factory=list)
     unique_repos_contributed_to: Set[str] = field(default_factory=set)
     stored_total_prs: Optional[int] = None  # Database stored value for total_prs
     

@@ -164,3 +164,44 @@ INSERT INTO issues (
 ON CONFLICT (number, repository_full_name)
 DO NOTHING
 """
+
+# Bulk Upsert Queries
+BULK_UPSERT_REPOSITORIES = """
+INSERT INTO repositories (full_name, name, owner)
+VALUES %s
+ON CONFLICT (full_name)
+DO NOTHING
+"""
+
+BULK_UPSERT_PULL_REQUESTS = """
+INSERT INTO pull_requests (
+    number, repository_full_name, title, merged_at, pr_created_at,
+    additions, deletions, commits, author_login, merged_by_login
+) VALUES %s
+ON CONFLICT (number, repository_full_name)
+DO NOTHING
+"""
+
+BULK_UPSERT_ISSUES = """
+INSERT INTO issues (
+    number, pr_number, repository_full_name, title, created_at, closed_at
+) VALUES %s
+ON CONFLICT (number, repository_full_name)
+DO NOTHING
+"""
+
+BULK_UPSERT_PR_DIFFS = """
+INSERT INTO pr_diffs (
+    pr_number, repository_full_name, miner_evaluation_id, earned_score, total_changes
+) VALUES %s
+ON CONFLICT (miner_evaluation_id, pr_number, repository_full_name)
+DO NOTHING
+"""
+
+BULK_UPSERT_FILE_CHANGES = """
+INSERT INTO file_changes (
+    pr_diff_id, filename, changes, additions, deletions, status, patch, file_extension
+) VALUES %s
+ON CONFLICT (pr_diff_id, filename)
+DO NOTHING
+"""

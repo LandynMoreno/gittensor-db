@@ -8,7 +8,8 @@ from .file_changes_repository import FileChangesRepository
 from ..queries import (
     GET_PR_DIFF_METADATA,
     SET_PR_DIFF,
-    GET_PR_DIFFS_BY_EVALUATION
+    GET_PR_DIFFS_BY_EVALUATION,
+    BULK_UPSERT_PR_DIFFS
 )
 
 
@@ -120,3 +121,45 @@ class PRDiffsRepository(BaseRepository):
             pr_diffs.append(pr_diff)
 
         return pr_diffs
+
+    def store_pr_diffs_bulk(self, pr_diffs: List[PRDiff]) -> int:
+        """
+        Bulk insert/update PR diffs with efficient SQL conflict resolution
+
+        Args:
+            pr_diffs: List of PRDiff objects to store
+
+        Returns:
+            Count of successfully stored PR diffs
+        """
+        if not pr_diffs:
+            return 0
+
+        # Prepare data for bulk insert
+        values = []
+        for pr_diff in pr_diffs:
+            values.append((
+                pr_diff.pr_number,
+                pr_diff.repository_full_name,
+                None,  # miner_evaluation_id - not needed for bulk storage
+                pr_diff.earned_score,
+                pr_diff.total_changes
+            ))
+
+        try:
+            with self.get_cursor(dictionary=False) as cursor:
+                # Use psycopg2's execute_values for efficient bulk insert
+                from psycopg2.extras import execute_values
+                execute_values(
+                    cursor,
+                    BULK_UPSERT_PR_DIFFS.replace('VALUES %s', 'VALUES %s'),
+                    values,
+                    template=None,
+                    page_size=100
+                )
+                self.db.commit()
+                return len(values)
+        except Exception as e:
+            self.db.rollback()
+            self.logger.error(f"Error in bulk PR diff storage: {e}")
+            return 0
