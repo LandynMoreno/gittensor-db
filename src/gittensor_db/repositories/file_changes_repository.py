@@ -6,8 +6,8 @@ from ..models.domain_models import FileChange
 from .base_repository import BaseRepository
 from ..queries import (
     GET_FILE_CHANGE,
-    GET_FILE_CHANGES_BY_PR_DIFF,
-    SET_FILE_CHANGES_FOR_PR_DIFF,
+    GET_FILE_CHANGES_BY_PR,
+    SET_FILE_CHANGES_FOR_PR,
     BULK_UPSERT_FILE_CHANGES
 )
 
@@ -19,6 +19,8 @@ class FileChangesRepository(BaseRepository):
     def _map_to_file_change(self, row: Dict[str, Any]) -> FileChange:
         """Map database row to FileChange object"""
         return FileChange(
+            pr_number=row['pr_number'],
+            repository_full_name=row['repository_full_name'],
             filename=row['filename'],
             changes=row['changes'],
             additions=row['additions'],
@@ -41,27 +43,29 @@ class FileChangesRepository(BaseRepository):
         """
         return self.query_single(GET_FILE_CHANGE, (file_change_id,), self._map_to_file_change)
 
-    def get_file_changes_by_pr_diff(self, pr_diff_id: int) -> List[FileChange]:
+    def get_file_changes_by_pr(self, pr_number: int, repository_full_name: str) -> List[FileChange]:
         """
-        Get all file changes for a specific PR diff
+        Get all file changes for a specific pull request
 
         Args:
-            pr_diff_id: Foreign key to PR diff
+            pr_number: Pull request number
+            repository_full_name: Repository full name
 
         Returns:
             List of FileChange objects
         """
-        return self.query_multiple(GET_FILE_CHANGES_BY_PR_DIFF, (pr_diff_id,), self._map_to_file_change)
+        return self.query_multiple(GET_FILE_CHANGES_BY_PR, (pr_number, repository_full_name), self._map_to_file_change)
 
-    def set_file_changes_for_pr_diff(self, pr_diff_id: int, file_changes: List[FileChange]) -> bool:
+    def set_file_changes_for_pr(self, pr_number: int, repository_full_name: str, file_changes: List[FileChange]) -> bool:
         """
-        Set file changes for a specific PR diff.
+        Set file changes for a specific pull request.
 
-        This method efficiently stores multiple file changes for a PR diff in a single transaction.
+        This method efficiently stores multiple file changes for a PR in a single transaction.
         It will insert new file changes or update existing ones.
 
         Args:
-            pr_diff_id: Foreign key to PR diff
+            pr_number: Pull request number
+            repository_full_name: Repository full name
             file_changes: List of FileChange objects to store
 
         Returns:
@@ -70,13 +74,14 @@ class FileChangesRepository(BaseRepository):
         if not file_changes:
             return True
 
-        query = SET_FILE_CHANGES_FOR_PR_DIFF
+        query = SET_FILE_CHANGES_FOR_PR
 
         try:
             with self.get_cursor() as cursor:
                 for file_change in file_changes:
                     params = (
-                        pr_diff_id,
+                        pr_number,
+                        repository_full_name,
                         file_change.filename,
                         file_change.changes,
                         file_change.additions,
@@ -91,28 +96,29 @@ class FileChangesRepository(BaseRepository):
                 return True
         except Exception as e:
             self.db.rollback()
-            self.logger.error(f"Error storing file changes for PR diff {pr_diff_id}: {e}")
+            self.logger.error(f"Error storing file changes for PR {pr_number} in {repository_full_name}: {e}")
             return False
 
-    def set_file_change(self, pr_diff_id: int, file_change: FileChange) -> bool:
+    def set_file_change(self, pr_number: int, repository_full_name: str, file_change: FileChange) -> bool:
         """
-        Set a single file change for a PR diff.
+        Set a single file change for a pull request.
 
         Args:
-            pr_diff_id: Foreign key to PR diff
+            pr_number: Pull request number
+            repository_full_name: Repository full name
             file_change: FileChange object to store
 
         Returns:
             True if successful, False otherwise
         """
-        return self.set_file_changes_for_pr_diff(pr_diff_id, [file_change])
+        return self.set_file_changes_for_pr(pr_number, repository_full_name, [file_change])
 
     def store_file_changes_bulk(self, file_changes: List[FileChange]) -> int:
         """
         Bulk insert/update file changes with efficient SQL conflict resolution
 
         Args:
-            file_changes: List of FileChange objects to store
+            file_changes: List of FileChange objects to store (must include pr_number and repository_full_name)
 
         Returns:
             Count of successfully stored file changes
@@ -124,7 +130,8 @@ class FileChangesRepository(BaseRepository):
         values = []
         for file_change in file_changes:
             values.append((
-                None,  # pr_diff_id - not needed for bulk storage
+                file_change.pr_number,
+                file_change.repository_full_name,
                 file_change.filename,
                 file_change.changes,
                 file_change.additions,

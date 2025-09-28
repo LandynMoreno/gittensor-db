@@ -20,6 +20,7 @@ class MinerEvaluationsRepository(BaseRepository):
         """Map database row to MinerEvaluation object"""
         return MinerEvaluation(
             uid=row['uid'],
+            hotkey=row['hotkey'],  # Required field
             id=row['id'],  # Required field
             total_score=float(row['total_score']) if row['total_score'] is not None else 0.0,
             total_lines_changed=row['total_lines_changed'] or 0,
@@ -43,17 +44,18 @@ class MinerEvaluationsRepository(BaseRepository):
         """
         return self.query_single(GET_MINER_EVALUATION, (evaluation_id,), self._map_to_miner_evaluation)
 
-    def get_latest_miner_evaluation(self, uid: int) -> Optional[MinerEvaluation]:
+    def get_latest_miner_evaluation(self, uid: int, hotkey: str) -> Optional[MinerEvaluation]:
         """
-        Get the latest miner evaluation for a specific UID
+        Get the latest miner evaluation for a specific miner
 
         Args:
             uid: Miner UID
+            hotkey: Miner hotkey
 
         Returns:
             Latest MinerEvaluation object if found, None otherwise
         """
-        return self.query_single(GET_LATEST_MINER_EVALUATION, (uid,), self._map_to_miner_evaluation)
+        return self.query_single(GET_LATEST_MINER_EVALUATION, (uid, hotkey), self._map_to_miner_evaluation)
 
     def set_miner_evaluation(self, evaluation: MinerEvaluation) -> bool:
         """
@@ -68,6 +70,7 @@ class MinerEvaluationsRepository(BaseRepository):
         query = SET_MINER_EVALUATION
         params = (
             evaluation.uid,
+            evaluation.hotkey,
             evaluation.github_id,
             evaluation.failed_reason,
             evaluation.total_score,

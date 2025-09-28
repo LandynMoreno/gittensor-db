@@ -5,6 +5,16 @@ Query exports
 from .queries import *
 
 __all__ = [
+    # Miner queries
+    'GET_MINER',
+    'GET_MINER_BY_UID',
+    'GET_MINER_BY_HOTKEY',
+    'GET_MINER_BY_GITHUB_ID',
+    'GET_MINER_BY_HOTKEY_AND_GITHUB_ID',
+    'SET_MINER',
+    'UPSERT_MINER',
+    'GET_ALL_MINERS',
+
     # Repository queries
     'GET_REPOSITORY',
     'SET_REPOSITORY',
@@ -14,17 +24,13 @@ __all__ = [
     'GET_PULL_REQUEST',
     'SET_PULL_REQUEST',
     'GET_PULL_REQUESTS_BY_REPOSITORY',
-    'GET_PULL_REQUEST_WITH_DIFFS',
-
-    # PR Diff queries
-    'GET_PR_DIFF_METADATA',
-    'SET_PR_DIFF',
-    'GET_PR_DIFFS_BY_EVALUATION',
+    'GET_PULL_REQUESTS_BY_MINER',
+    'GET_PULL_REQUEST_WITH_FILE_CHANGES',
 
     # File Change queries
     'GET_FILE_CHANGE',
-    'GET_FILE_CHANGES_BY_PR_DIFF',
-    'SET_FILE_CHANGES_FOR_PR_DIFF',
+    'GET_FILE_CHANGES_BY_PR',
+    'SET_FILE_CHANGES_FOR_PR',
 
     # Miner Evaluation queries
     'GET_MINER_EVALUATION',
@@ -38,9 +44,9 @@ __all__ = [
     'SET_ISSUE',
 
     # Bulk Upsert queries
+    'BULK_UPSERT_MINERS',
     'BULK_UPSERT_REPOSITORIES',
     'BULK_UPSERT_PULL_REQUESTS',
     'BULK_UPSERT_ISSUES',
-    'BULK_UPSERT_PR_DIFFS',
     'BULK_UPSERT_FILE_CHANGES'
 ]
