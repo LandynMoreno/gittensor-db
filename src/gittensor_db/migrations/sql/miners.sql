@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS miners (
     PRIMARY KEY (uid, hotkey, github_id),
 
     -- Data integrity constraints
-    CONSTRAINT chk_miners_uid                   CHECK (uid >= 0),
+    CONSTRAINT chk_miners_uid                   CHECK (uid >= 0)
 );
 
 -- Indexes for performance

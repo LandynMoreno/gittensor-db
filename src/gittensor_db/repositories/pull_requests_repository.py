@@ -13,6 +13,8 @@ from ..queries import (
     BULK_UPSERT_PULL_REQUESTS
 )
 
+import numpy as np
+
 
 class PullRequestsRepository(BaseRepository):
     def __init__(self, db_connection):
@@ -107,6 +109,11 @@ class PullRequestsRepository(BaseRepository):
         Returns:
             True if successful, False otherwise
         """
+
+        # uid is causing issues bc it keeps remaining as an np.int64
+        if isinstance(pull_request.uid, np.integer):
+            pull_request.uid = pull_request.uid.item()  # Converts numpy int to Python int
+            
         query = SET_PULL_REQUEST
         params = (
             pull_request.number,
@@ -223,6 +230,11 @@ class PullRequestsRepository(BaseRepository):
         # Prepare data for bulk insert
         values = []
         for pr in pull_requests:
+
+            # uid is causing issues bc it keeps remaining as an np.int64
+            if isinstance(pr.uid, np.integer):
+                pr.uid = pr.uid.item()  # Converts numpy int to Python int
+                
             values.append((
                 pr.number,
                 pr.repository_full_name,
