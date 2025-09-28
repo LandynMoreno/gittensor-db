@@ -3,18 +3,18 @@ Domain model exports
 """
 
 from .domain_models import (
+    Miner,
     Repository,
-    FileChange, 
-    PRDiff,
+    FileChange,
     Issue,
     PullRequest,
     MinerEvaluation
 )
 
 __all__ = [
+    'Miner',
     'Repository',
     'FileChange',
-    'PRDiff',
     'Issue',
     'PullRequest',
     'MinerEvaluation'

@@ -8,9 +8,9 @@ from .connection.database import create_database_connection, test_database_conne
 from .migrations.migrator import DatabaseMigrator
 from .repositories import (
     BaseRepository,
+    MinersRepository,
     RepositoriesRepository,
     PullRequestsRepository,
-    PRDiffsRepository,
     IssuesRepository,
     FileChangesRepository,
     MinerEvaluationsRepository,
@@ -22,9 +22,9 @@ __all__ = [
     "test_database_connection",
     "BaseRepository",
     "DatabaseMigrator",
-    "RepositoriesRepository", 
+    "MinersRepository",
+    "RepositoriesRepository",
     "PullRequestsRepository",
-    "PRDiffsRepository",
     "IssuesRepository",
     "FileChangesRepository",
     "MinerEvaluationsRepository",

@@ -19,10 +19,10 @@ class DatabaseMigrator:
         """Get list of SQL migration files in order"""
         migration_order = [
             'repositories.sql',
+            'miners.sql',
             'miner_evaluations.sql',
             'pull_requests.sql',
             'issues.sql',
-            'pr_diffs.sql',
             'file_changes.sql'
         ]
         return migration_order
